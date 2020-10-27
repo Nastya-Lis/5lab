@@ -36,6 +36,9 @@ public class MainPageActivity extends AppCompatActivity {
             recyclerView.setAdapter(new RecipeAdapter(recipeForJson,getApplicationContext()));
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
         }
+
+
+
     }
 
 }

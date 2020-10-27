@@ -3,11 +3,15 @@ package com.example.a5lab.recyclerViewPack;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,6 +48,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             cookingRecipe =(TextView) itemView.findViewById(R.id.cookingRecipeElementId);
             photo = (ImageView) itemView.findViewById(R.id.pictureElementId);
         }
+
     }
 
 
@@ -53,8 +58,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_example_template,
                 parent,false);
 
+
         return new RecipeView(view);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull RecipeView holder, int position) {
@@ -75,6 +82,33 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 Recipe recipeSend = recipeArrayList.get(position);
                 intent.putExtra(Recipe.class.getSimpleName(),recipeSend);
                 context.startActivity(intent);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(context,holder.itemView);
+                popupMenu.inflate(R.menu.context_menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()){
+                            case R.id.editId:
+                                Intent intent = new Intent(context, AddRecipeActivity.class);
+                                intent.putExtra(Recipe.class.getSimpleName(),recipe);
+                                context.startActivity(intent);
+                                break;
+                            case R.id.deleteId:
+                                Toast.makeText(context,"Hihihih delete", Toast.LENGTH_LONG)
+                                        .show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+                return true;
             }
         });
 

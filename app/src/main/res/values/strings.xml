@@ -20,4 +20,6 @@
     <string name="cookingRecipe">Cooking Recipe:</string>
     <string name="timeForCooking">Time For Cook:</string>
     <string name="category">Category:</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>
