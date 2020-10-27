@@ -9,6 +9,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class JsonManipulations {
@@ -61,6 +62,25 @@ public class JsonManipulations {
       }
 
     }
+
+
+    public void serializationToJsonForUpdateVersion(File file,RecipeForJson recipeForJson){
+        if(isFileExists(file)){
+            objectMapper = new ObjectMapper();
+            try{
+                recipes = getFromFileList(file);
+                if(recipes == null){
+                    recipes = new RecipeForJson();
+                }
+                recipes.recipeList = recipeForJson.recipeList;
+                objectMapper.writerWithDefaultPrettyPrinter().writeValue(file,recipes);
+            }
+            catch(IOException e){
+                Log.i("Log_json","Oops, your serialization doesn't work");
+            }
+        }
+    }
+
 
     private RecipeForJson getFromFileList(File file){
         if(file!=null){

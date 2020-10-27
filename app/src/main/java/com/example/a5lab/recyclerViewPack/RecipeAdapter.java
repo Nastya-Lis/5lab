@@ -20,6 +20,7 @@ import com.example.a5lab.R;
 import com.example.a5lab.activities.AddRecipeActivity;
 import com.example.a5lab.activities.MainPageActivity;
 import com.example.a5lab.activities.ShowCurrentRecipeActivity;
+import com.example.a5lab.units.ListExistingRecipesManager;
 import com.example.a5lab.units.Recipe;
 import com.example.a5lab.units.RecipeForJson;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView> {
 
     RecipeForJson recipeForJson;
+    ListExistingRecipesManager listExistingRecipesManager;
     Context context;
 
     public RecipeAdapter(RecipeForJson recipeForJson,Context context){
@@ -100,6 +102,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                                 context.startActivity(intent);
                                 break;
                             case R.id.deleteId:
+                                listExistingRecipesManager =
+                                        new ListExistingRecipesManager(recipeForJson.recipeList,
+                                                context);
+                                listExistingRecipesManager.removeElement(position);
+                                notifyDataSetChanged();
                                 Toast.makeText(context,"Hihihih delete", Toast.LENGTH_LONG)
                                         .show();
                                 break;
