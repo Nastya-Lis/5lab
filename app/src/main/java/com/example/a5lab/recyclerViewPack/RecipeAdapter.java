@@ -1,6 +1,8 @@
 package com.example.a5lab.recyclerViewPack;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.ContextMenu;
@@ -20,6 +22,7 @@ import com.example.a5lab.R;
 import com.example.a5lab.activities.AddRecipeActivity;
 import com.example.a5lab.activities.MainPageActivity;
 import com.example.a5lab.activities.ShowCurrentRecipeActivity;
+import com.example.a5lab.activities.UpdateRecipeActivity;
 import com.example.a5lab.units.ListExistingRecipesManager;
 import com.example.a5lab.units.Recipe;
 import com.example.a5lab.units.RecipeForJson;
@@ -39,7 +42,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         this.recipeForJson = recipeForJson;
     }
 
-    class RecipeView extends RecyclerView.ViewHolder{
+    public class RecipeView extends RecyclerView.ViewHolder{
         TextView name,ingredient,timeCooking,cookingRecipe;
         ImageView photo;
         public RecipeView(@NonNull View itemView) {
@@ -51,6 +54,30 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             photo = (ImageView) itemView.findViewById(R.id.pictureElementId);
         }
 
+    }
+
+    public RecipeAdapter(RecipeForJson recipeForJson){
+        this.recipeForJson = recipeForJson;
+    }
+
+    public interface OnRecipeClickListener{
+        void onRecipeClick(Recipe recipe);
+    }
+
+    public interface OnRecipeLongClickListener{
+        boolean onRecipeLongClick(Recipe recipe,View view);
+    }
+
+    public OnRecipeClickListener onRecipeClickListener;
+    public OnRecipeLongClickListener onRecipeLongClickListener;
+
+
+    public void setOnRecipeClickListener(OnRecipeClickListener onRecipeClickListener){
+        this.onRecipeClickListener = onRecipeClickListener;
+    }
+
+    public void setOnRecipeLongClickListener(OnRecipeLongClickListener onRecipeLongClickListener){
+        this.onRecipeLongClickListener = onRecipeLongClickListener;
     }
 
 
@@ -77,7 +104,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.photo.setImageURI(Uri.parse(recipe.getPhoto()));
 
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        if(onRecipeClickListener!=null){
+            holder.itemView.setOnClickListener(view -> onRecipeClickListener.onRecipeClick(recipe));
+        }
+        if(onRecipeLongClickListener != null){
+            holder.itemView.setOnLongClickListener(view ->
+                    onRecipeLongClickListener.onRecipeLongClick(recipe,view));
+        }
+
+    /*    holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, ShowCurrentRecipeActivity.class);
@@ -96,19 +131,20 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         switch (menuItem.getItemId()){
+
                             case R.id.editId:
-                                Intent intent = new Intent(context, AddRecipeActivity.class);
+                                Intent intent = new Intent(context, UpdateRecipeActivity.class);
                                 intent.putExtra(Recipe.class.getSimpleName(),recipe);
                                 context.startActivity(intent);
                                 break;
+
+
                             case R.id.deleteId:
-                                listExistingRecipesManager =
-                                        new ListExistingRecipesManager(recipeForJson.recipeList,
-                                                context);
-                                listExistingRecipesManager.removeElement(position);
-                                notifyDataSetChanged();
-                                Toast.makeText(context,"Hihihih delete", Toast.LENGTH_LONG)
-                                        .show();
+                                            listExistingRecipesManager =
+                                                    new ListExistingRecipesManager(recipeForJson.recipeList,
+                                                            context);
+                                            listExistingRecipesManager.removeElement(position);
+                                            notifyDataSetChanged();
                                 break;
                         }
                         return false;
@@ -117,13 +153,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 popupMenu.show();
                 return true;
             }
-        });
+        });*/
 
     }
 
     @Override
     public int getItemCount() {
-        return recipeForJson.recipeList.size();
+       // return recipeForJson.recipeList.size();
+        return  recipeForJson.recipeList == null ? 0 : recipeForJson.recipeList.size();
     }
 
 }

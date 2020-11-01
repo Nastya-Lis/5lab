@@ -1,15 +1,15 @@
 package com.example.a5lab.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,13 +30,17 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class AddRecipeActivity extends AppCompatActivity {
+public class UpdateRecipeActivity extends AppCompatActivity {
 
     String fileName = "recipesJson.json";
     File file;
     JsonManipulations jsonManipulations =  new JsonManipulations();
 
     Recipe currentRecipe = new Recipe();
+    Recipe fisrtDataRecipe = new Recipe();
+    Recipe lastDataRecipe = new Recipe();
+
+
     RecipeForJson recipeForJson = new RecipeForJson();
 
     private final int Pick_image = 1;
@@ -49,7 +53,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_new_recipe);
+        setContentView(R.layout.activity_update_recipe);
 
         file = new File(super.getFilesDir(),fileName);
         name = (EditText) findViewById(R.id.nameRecipeId);
@@ -59,9 +63,8 @@ public class AddRecipeActivity extends AppCompatActivity {
         timePicker = (TimePicker) findViewById(R.id.timerPickerId);
 
 
-       recipeForJson.recipeList = new ArrayList<>();
-
-       checkData();
+        checkData();
+        recipeForJson.recipeList = new ArrayList<>();
 
         Button button = (Button) findViewById(R.id.setPictureRecipe);
 
@@ -74,16 +77,14 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
 
+        resForCategoryView();
 
-       resForCategoryView();
     }
 
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent)
+    {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-
-
         switch (requestCode) {
             case Pick_image:
                 if (resultCode == RESULT_OK) {
@@ -108,14 +109,61 @@ public class AddRecipeActivity extends AppCompatActivity {
         currentRecipe.setTimeCooking(String.valueOf(timePicker.getHour()) +
                 String.valueOf(timePicker.getMinute()));
         currentRecipe.setPhoto(photoUri.toString());
-        recipeForJson.recipeList.add(currentRecipe);
+        int index = -1;
+        recipeForJson = jsonManipulations.deserializationFromJson(file);
+        for(int i = 0;i < recipeForJson.recipeList.size();i++ ){
+            if(recipeForJson.recipeList.get(i).getName().equals(fisrtDataRecipe.getName())
+                )
+            {
+                index = i;
+                break;
+            }
+        }
+        if(index != -1)
+        recipeForJson.recipeList.set(index,currentRecipe);
+    }
 
+    private void resForCategoryView() {
+        ArrayList<String> categories = new ArrayList<>();
+        for (Category category : Category.values()) {
+            categories.add(category.toString());
+        }
+
+        if(categories.size() != 0 ){
+            Spinner categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_item,categories);
+            categorySpinner.setAdapter(adapter);
+
+
+            AdapterView.OnItemSelectedListener onItemSelectedListener =
+                    new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                            String selectedItem = adapterView.getSelectedItem().toString();
+                            Category category = Category.valueOf(selectedItem);
+                            currentRecipe.setCategory(category);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+                            currentRecipe.setCategory(Category.DELLY);
+                        }
+
+                    };
+
+            categorySpinner.setOnItemSelectedListener(onItemSelectedListener);
+        }
     }
 
     private void checkData(){
         Bundle bundle = getIntent().getExtras();
         if(bundle != null){
             Recipe gettingRecipe =(Recipe) bundle.getSerializable(Recipe.class.getSimpleName());
+
+            fisrtDataRecipe = gettingRecipe;
+
             name.setText(gettingRecipe.getName());
             ingredient.setText(gettingRecipe.getIngredient());
             cookingRecipe.setText(gettingRecipe.getCookingRecipe());
@@ -129,17 +177,17 @@ public class AddRecipeActivity extends AppCompatActivity {
                 String comparing = gettingRecipe.getCategory().toString();
                 if(categories.get(i).equals(comparing))
                 {
-                position = i;
-                break;
+                    position = i;
+                    break;
                 }
             }
             if(position >= 0){
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                         android.R.layout.simple_spinner_item,categories);
-            spinner.setAdapter(adapter);
-            int positionElement = position;
+                spinner.setAdapter(adapter);
+                int positionElement = position;
 
-            //сделать что-то адекватное
+                //сделать что-то адекватное
               /*  AdapterView.OnItemSelectedListener onSelectedListener =
                         new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -160,49 +208,27 @@ public class AddRecipeActivity extends AppCompatActivity {
         }
     }
 
-    private void resForCategoryView() {
-        ArrayList<String> categories = new ArrayList<>();
-        for (Category category : Category.values()) {
-            categories.add(category.toString());
-        }
+    public void updateOldRecipe(View view) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("Warning!").setMessage("Do you want to change to edit?").
+                setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        createRecipe();
+                        if(jsonManipulations.isFileExists(file)){
+                            jsonManipulations.serializationToJsonForUpdate(file,recipeForJson);
+                        }
+                        Toast.makeText(UpdateRecipeActivity.this,
+                                        "update is fine",Toast.LENGTH_LONG).show();
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
 
-        if(categories.size() != 0 ){
-            Spinner categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
-           ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                   android.R.layout.simple_spinner_item,categories);
-           categorySpinner.setAdapter(adapter);
-
-
-            AdapterView.OnItemSelectedListener onItemSelectedListener =
-                    new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-                    String selectedItem = adapterView.getSelectedItem().toString();
-                    Category category = Category.valueOf(selectedItem);
-                    currentRecipe.setCategory(category);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    currentRecipe.setCategory(Category.DELLY);
-                }
-
-            };
-
-            categorySpinner.setOnItemSelectedListener(onItemSelectedListener);
-        }
     }
-
-    public void addNewRecipe(View view) {
-        createRecipe();
-        jsonManipulations.isFileExists(file);
-        if(file.exists()) {
-            jsonManipulations.serializationToJson(file, currentRecipe);
-            Toast.makeText(this, "lalala:" +
-                    recipeForJson.recipeList.size(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-
 }

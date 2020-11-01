@@ -22,4 +22,9 @@
     <string name="category">Category:</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="searchIcon">Searching</string>
+    <string name="sortIcon">Sort</string>
+    <string name="addIcon">Add</string>
+    <string name="by_name_a_z">sort by name</string>
+    <string name="by_category">sort by category</string>
 </resources>

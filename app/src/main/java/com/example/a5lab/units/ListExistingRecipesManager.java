@@ -26,8 +26,15 @@ public class ListExistingRecipesManager {
         updateJson();
     }
 
+
+
+    public void removeElementV2(Recipe recipeSend){
+        recipeList.removeIf(recipe ->recipe.getName() == recipeSend.getName());
+        updateJson();
+    }
+
     private void updateJson(){
         file = new File(context.getFilesDir(),fileName);
-        jsonManipulations.serializationToJsonForUpdateVersion(file,new RecipeForJson(recipeList));
+        jsonManipulations.serializationToJsonForRemove(file,new RecipeForJson(recipeList));
     }
 }

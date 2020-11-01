@@ -64,7 +64,25 @@ public class JsonManipulations {
     }
 
 
-    public void serializationToJsonForUpdateVersion(File file,RecipeForJson recipeForJson){
+    public void serializationToJsonForRemove(File file, RecipeForJson recipeForJson){
+        if(isFileExists(file)){
+            objectMapper = new ObjectMapper();
+            try{
+                recipes = getFromFileList(file);
+                if(recipes == null){
+                    recipes = new RecipeForJson();
+                }
+                recipes.recipeList = recipeForJson.recipeList;
+                objectMapper.writerWithDefaultPrettyPrinter().writeValue(file,recipes);
+            }
+            catch(IOException e){
+                Log.i("Log_json","Oops, your serialization doesn't work");
+            }
+        }
+    }
+
+
+    public void serializationToJsonForUpdate(File file,RecipeForJson recipeForJson){
         if(isFileExists(file)){
             objectMapper = new ObjectMapper();
             try{
