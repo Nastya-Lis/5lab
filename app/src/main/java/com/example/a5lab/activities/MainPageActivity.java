@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import com.example.a5lab.units.Recipe;
 import com.example.a5lab.units.RecipeForJson;
 
 import java.io.File;
+import java.util.List;
 
 public class MainPageActivity extends AppCompatActivity {
 
@@ -93,7 +95,6 @@ public class MainPageActivity extends AppCompatActivity {
 
     }
 
-
     private void editRecipe(Recipe recipe){
         Intent intent = new Intent(this,UpdateRecipeActivity.class);
         intent.putExtra(Recipe.class.getSimpleName(),recipe);
@@ -130,50 +131,27 @@ public class MainPageActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart(){
-        super.onStart();
-
-       /* popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_menu_bar, menu);
+   /*     SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
+            public boolean onQueryTextSubmit(String queryText) {
+                return false;
 
-                switch (menuItem.getItemId()){
-                    case R.id.editId:
+            }
 
-                        break;
-                    case R.id.deleteId:
-                        break;
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(TextUtils.isEmpty(newText)){
 
                 }
                 return false;
             }
-        });*/
-
-    }
-
-
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_menu_bar, menu);
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String queryText) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                if(TextUtils.isEmpty(newText)){
-//                }
-//
-//                return false;
-//            }
-//        });
+        });
+*/
            return true;
     }
 
@@ -186,6 +164,33 @@ public class MainPageActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.search:
+
+                break;
+            case R.id.sorting_by_default:
+                recipeForJson = jsonManipulations.deserializationFromJson(file);
+                recipeAdapter = new RecipeAdapter(recipeForJson,this);
+                recyclerView.setAdapter(recipeAdapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                break;
+            case R.id.sorting_by_name:
+                recipeForJson = jsonManipulations.deserializationFromJson(file);
+               recipeForJson.recipeList.
+                        sort((recipe1,recipe2) -> recipe1.getName().toUpperCase().
+                                compareTo(recipe2.getName().toUpperCase()));
+
+               RecipeAdapter recipeAdapterFoName = new RecipeAdapter(recipeForJson,this);
+               recyclerView.setAdapter(recipeAdapterFoName);
+               recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                break;
+            case R.id.sorting_by_category:
+                recipeForJson = jsonManipulations.deserializationFromJson(file);
+                recipeForJson.recipeList.
+                        sort((recipe1,recipe2) -> recipe1.getCategory().
+                                compareTo(recipe2.getCategory()));
+
+                RecipeAdapter recipeAdapterForCategory = new RecipeAdapter(recipeForJson,this);
+                recyclerView.setAdapter(recipeAdapterForCategory);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 break;
         }
         return super.onOptionsItemSelected(item);
