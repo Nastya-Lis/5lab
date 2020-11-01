@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -30,16 +32,56 @@ import com.example.a5lab.units.RecipeForJson;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView> {
+public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView>
+implements Filterable {
 
     RecipeForJson recipeForJson;
+    List<Recipe> recipeListCopy;
     ListExistingRecipesManager listExistingRecipesManager;
     Context context;
 
     public RecipeAdapter(RecipeForJson recipeForJson,Context context){
         this.context = context;
         this.recipeForJson = recipeForJson;
+        recipeListCopy = new ArrayList<>(recipeForJson.recipeList);
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                List<Recipe> filteredListRecipes = new ArrayList<>();
+
+                if(charSequence == null || charSequence.length() == 0){
+                    filteredListRecipes.addAll(recipeListCopy);
+                }
+                else{
+                    String enteringString = charSequence.toString().toLowerCase().trim();
+
+                    for (Recipe recipe: recipeListCopy) {
+                        if(recipe.getName().contains(enteringString)){
+                            filteredListRecipes.add(recipe);
+                        }
+                    }
+                }
+
+                FilterResults filteredResult = new FilterResults();
+                filteredResult.values = filteredListRecipes;
+                return filteredResult;
+
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                recipeForJson.recipeList.clear();
+                recipeForJson.recipeList.addAll((List) filterResults.values);
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public class RecipeView extends RecyclerView.ViewHolder{

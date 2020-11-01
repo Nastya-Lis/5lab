@@ -23,6 +23,9 @@ import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+
+
+
 import com.example.a5lab.R;
 import com.example.a5lab.educationManager.JsonManipulations;
 import com.example.a5lab.recyclerViewPack.RecipeAdapter;
@@ -133,7 +136,23 @@ public class MainPageActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_menu_bar, menu);
-   /*     SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                recipeAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+     /*   SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -150,8 +169,7 @@ public class MainPageActivity extends AppCompatActivity {
                 }
                 return false;
             }
-        });
-*/
+        });*/
            return true;
     }
 
@@ -163,15 +181,14 @@ public class MainPageActivity extends AppCompatActivity {
                 Intent intent = new Intent(this,AddRecipeActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.search:
 
-                break;
             case R.id.sorting_by_default:
                 recipeForJson = jsonManipulations.deserializationFromJson(file);
                 recipeAdapter = new RecipeAdapter(recipeForJson,this);
                 recyclerView.setAdapter(recipeAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 break;
+
             case R.id.sorting_by_name:
                 recipeForJson = jsonManipulations.deserializationFromJson(file);
                recipeForJson.recipeList.
@@ -182,6 +199,7 @@ public class MainPageActivity extends AppCompatActivity {
                recyclerView.setAdapter(recipeAdapterFoName);
                recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 break;
+
             case R.id.sorting_by_category:
                 recipeForJson = jsonManipulations.deserializationFromJson(file);
                 recipeForJson.recipeList.

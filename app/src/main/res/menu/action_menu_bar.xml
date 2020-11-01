@@ -5,7 +5,7 @@
         android:id="@+id/search"
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="ifRoom"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:actionViewClass="android.widget.SearchView"
         android:title="@string/searchIcon"
         ></item>
     <item
