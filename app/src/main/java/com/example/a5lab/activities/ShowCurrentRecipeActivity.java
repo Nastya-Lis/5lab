@@ -46,6 +46,6 @@ public class ShowCurrentRecipeActivity extends AppCompatActivity {
       ingredient.setText(currentRecipe.getIngredient());
       cookingRecipe.setText(currentRecipe.getCookingRecipe());
       category.setText(currentRecipe.getCategory().toString());
-      image.setImageURI(Uri.parse(currentRecipe.getPhoto()));
+      image.setImageResource(R.drawable.recipebook);
     }
 }

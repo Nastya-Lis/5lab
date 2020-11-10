@@ -36,6 +36,8 @@ public class UpdateRecipeActivity extends AppCompatActivity {
     File file;
     JsonManipulations jsonManipulations =  new JsonManipulations();
 
+
+    String photoDefault = "content://media/external/images/media/66";
     Recipe currentRecipe = new Recipe();
     Recipe fisrtDataRecipe = new Recipe();
     Recipe lastDataRecipe = new Recipe();
@@ -106,9 +108,9 @@ public class UpdateRecipeActivity extends AppCompatActivity {
         currentRecipe.setName(name.getText().toString());
         currentRecipe.setIngredient(ingredient.getText().toString());
         currentRecipe.setCookingRecipe(cookingRecipe.getText().toString());
-        currentRecipe.setTimeCooking(String.valueOf(timePicker.getHour()) +
+        currentRecipe.setTimeCooking(String.valueOf(timePicker.getHour()) + ":" +
                 String.valueOf(timePicker.getMinute()));
-        currentRecipe.setPhoto(photoUri.toString());
+        currentRecipe.setPhoto(photoDefault);
         int index = -1;
         recipeForJson = jsonManipulations.deserializationFromJson(file);
         for(int i = 0;i < recipeForJson.recipeList.size();i++ ){
@@ -187,7 +189,6 @@ public class UpdateRecipeActivity extends AppCompatActivity {
                 spinner.setAdapter(adapter);
                 int positionElement = position;
 
-                //сделать что-то адекватное
               /*  AdapterView.OnItemSelectedListener onSelectedListener =
                         new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -204,7 +205,16 @@ public class UpdateRecipeActivity extends AppCompatActivity {
                 spinner.setOnItemSelectedListener(onSelectedListener);
                 */
             }
-            image.setImageURI(Uri.parse(gettingRecipe.getPhoto()));
+           /* try {
+                InputStream inputStream = getContentResolver().
+                        openInputStream(Uri.parse(gettingRecipe.getPhoto()));
+                Bitmap bitmapPicture = BitmapFactory.decodeStream(inputStream);
+                image.setImageBitmap(bitmapPicture);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+*/
+            //image.setImageURI(Uri.parse(gettingRecipe.getPhoto()));
         }
     }
 

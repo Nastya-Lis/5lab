@@ -29,6 +29,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
+import java.util.stream.BaseStream;
+import java.util.stream.Collector;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 public class AddRecipeActivity extends AppCompatActivity {
 
@@ -40,6 +61,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     RecipeForJson recipeForJson = new RecipeForJson();
 
     private final int Pick_image = 1;
+    String photoDefault = "content://media/external/images/media/66";
 
     EditText name,ingredient,cookingRecipe;
     ImageView image;
@@ -83,7 +105,6 @@ public class AddRecipeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
-
         switch (requestCode) {
             case Pick_image:
                 if (resultCode == RESULT_OK) {
@@ -105,9 +126,9 @@ public class AddRecipeActivity extends AppCompatActivity {
         currentRecipe.setName(name.getText().toString());
         currentRecipe.setIngredient(ingredient.getText().toString());
         currentRecipe.setCookingRecipe(cookingRecipe.getText().toString());
-        currentRecipe.setTimeCooking(String.valueOf(timePicker.getHour()) +
+        currentRecipe.setTimeCooking(String.valueOf(timePicker.getHour()) + ":" +
                 String.valueOf(timePicker.getMinute()));
-        currentRecipe.setPhoto(photoUri.toString());
+        currentRecipe.setPhoto(photoDefault);
         recipeForJson.recipeList.add(currentRecipe);
 
     }
@@ -139,7 +160,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             spinner.setAdapter(adapter);
             int positionElement = position;
 
-            //сделать что-то адекватное
+
               /*  AdapterView.OnItemSelectedListener onSelectedListener =
                         new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -156,7 +177,16 @@ public class AddRecipeActivity extends AppCompatActivity {
                 spinner.setOnItemSelectedListener(onSelectedListener);
                 */
             }
-            image.setImageURI(Uri.parse(gettingRecipe.getPhoto()));
+         /*   try {
+                InputStream inputStream = getContentResolver().
+                        openInputStream(Uri.parse(gettingRecipe.getPhoto()));
+                Bitmap bitmapPicture = BitmapFactory.decodeStream(inputStream);
+                image.setImageBitmap(bitmapPicture);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+*/
+
         }
     }
 
@@ -199,7 +229,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         jsonManipulations.isFileExists(file);
         if(file.exists()) {
             jsonManipulations.serializationToJson(file, currentRecipe);
-            Toast.makeText(this, "lalala:" +
+            Toast.makeText(this, "add to recipe list:" +
                     recipeForJson.recipeList.size(), Toast.LENGTH_LONG).show();
         }
     }

@@ -50,17 +50,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="17dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/timeForCooking"
-                android:textSize="17dp" />
 
-            <TimePicker
-                android:id="@+id/timerPickerId"
-                android:layout_width="243dp"
-                android:layout_height="86dp"
-                android:timePickerMode="spinner"></TimePicker>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -75,6 +65,17 @@
 
             </Spinner>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/timeForCooking"
+                android:textSize="17dp" />
+
+            <TimePicker
+                android:id="@+id/timerPickerId"
+                android:layout_width="243dp"
+                android:layout_height="86dp"
+                android:timePickerMode="spinner"></TimePicker>
             <GridLayout
                 android:layout_width="384dp"
                 android:layout_height="match_parent">

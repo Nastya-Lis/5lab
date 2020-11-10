@@ -23,9 +23,6 @@ import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-
-
-
 import com.example.a5lab.R;
 import com.example.a5lab.educationManager.JsonManipulations;
 import com.example.a5lab.recyclerViewPack.RecipeAdapter;
@@ -62,6 +59,13 @@ public class MainPageActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
         }
 
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateRecycler();
         creationOfPopupMenu();
     }
 
@@ -116,6 +120,7 @@ public class MainPageActivity extends AppCompatActivity {
                                     new ListExistingRecipesManager(recipeForJson.recipeList,
                                             MainPageActivity.this);
                             listExistingRecipesManager.removeElementV2(recipe);
+                            updateRecycler();
                         }
                         catch (Exception e){
 
@@ -132,6 +137,13 @@ public class MainPageActivity extends AppCompatActivity {
         alertDialog.show();
 
     }
+
+    private void updateRecycler(){
+        recipeForJson = jsonManipulations.deserializationFromJson(file);
+        recipeAdapter = new RecipeAdapter(recipeForJson, getApplicationContext());
+        recyclerView.setAdapter(recipeAdapter);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -152,24 +164,7 @@ public class MainPageActivity extends AppCompatActivity {
                 return false;
             }
         });
-     /*   SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String queryText) {
-                return false;
 
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if(TextUtils.isEmpty(newText)){
-
-                }
-                return false;
-            }
-        });*/
            return true;
     }
 
